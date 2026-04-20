@@ -2,6 +2,7 @@
 import streamlit as st
 # from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col
+import requests  
 
 # Write directly to the app
 st.title(f":cup_with_straw: Customize Your Smoothie :cup_with_straw:")
@@ -15,8 +16,11 @@ st.write('The name on your Smoothie will be: ', name_on_order)
 
 # session = get_active_session()
 cnx = st.connection("snowflake")
-my_dataframe = cnx.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
+session = cnx.session()
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
 # st.dataframe(data=my_dataframe, use_container_width=True)
+
+
 
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:'
@@ -43,3 +47,6 @@ if ingredients_list:
         session.sql(my_insert_stmt).collect()
         success_msg = 'Your Smoothie is ordered, ' + name_on_order + '!' 
         st.success(success_msg, icon="✅")
+
+smoothiefroot_response = requests.get("[https://my.smoothiefroot.com/api/fruit/watermelon](https://my.smoothiefroot.com/api/fruit/watermelon)")  
+st.text(smoothiefroot_response)
